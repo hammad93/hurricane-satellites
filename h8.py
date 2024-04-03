@@ -12,7 +12,7 @@ class Himawari8DataSource(DataSource):
       dimension = 10
       metadata = self.jpn_get_latest_metadata()
       parsed_time = dateutil.parser.parse(metadata['date'])
-      template_url = f"https://himawari8.nict.go.jp/img/FULL_24h/B{band:02}/10d/550/{parsed_time.year}/{parsed_time.strftime('%m')}/{parsed_time.day}/{parsed_time.strftime('%H%M%S')}" #_3_3.png
+      template_url = f"https://himawari8.nict.go.jp/img/FULL_24h/B{band:02}/10d/550/{parsed_time.year}/{parsed_time.strftime('%m')}/{parsed_time.strftime('%d')}/{parsed_time.strftime('%H%M%S')}" #_3_3.png
       result_urls = []
       for i in range(dimension) :
         for j in range(dimension) :
@@ -30,7 +30,7 @@ class Himawari8DataSource(DataSource):
             urlretrieve(url, save_path)
             return save_path
         except Exception as e:
-            print(f"Failed to download {filename}: {e}")
+            print(f"Failed to download {filename} URL {url}: {e}")
             return None
 
     def getRecentData(self, file_prefix=''):
