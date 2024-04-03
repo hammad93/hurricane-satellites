@@ -15,6 +15,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from abc import ABC, abstractmethod
 
+class Config:
+    GOES_EAST_STATIC_URL = "https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/GOES16-ABI-FD-GEOCOLOR-10848x10848.tif"
+    GOES_WEST_STATIC_URL = "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/FD/GEOCOLOR/GOES18-ABI-FD-GEOCOLOR-10848x10848.tif"
+    h8_link = "https://himawari8.nict.go.jp/img/FULL_24h/latest.json?_={time}"
+    eumetsat_consumer_key = userdata.get('eumetsat_pass')
+    eumetsat_consumer_secret = userdata.get('eumetsat_secret')
+    output_dir = '/content'
+
 class DataSource(ABC):
     @abstractmethod
     def getRecentData(self):
