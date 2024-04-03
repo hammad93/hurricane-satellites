@@ -15,7 +15,8 @@ Downloads must be from a primary source.
 https://github.com/hammad93/hurricane-map/issues/15
 
 # Quickstart
-  - Sign up through the EUMETSAT from the following link and set the following environment variables
+  - The EUMETSAT provides free access to data but requires registration. from the following link and set the following environment variables
+    - https://eoportal.eumetsat.int/userMgmt/register.faces
     - https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
     - eumetsat_pass
     - eumetsat_secret
