@@ -18,6 +18,12 @@ https://github.com/hammad93/hurricane-map/issues/15
   - The EUMETSAT provides free access to data but requires registration. from the following link and set the following environment variables
     - https://eoportal.eumetsat.int/userMgmt/register.faces
     - https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
-    - eumetsat_pass
-    - eumetsat_secret
-  - 
+    - https://api.eumetsat.int/api-key/
+    - https://gitlab.eumetsat.int/eumetlab/data-services/eumdac_data_store/-/blob/master/3_Downloading_products.ipynb?ref_type=heads
+    - EUMETSAT_PASS
+    - EUMETSAT_SECRET
+  - SFTP environment variables to upload results
+    - BASE64_SSH_GEOSERVER
+      - A base 64 encoded string of the SSH key
+    - HOST_SSH
+    - USER_SSH
