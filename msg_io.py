@@ -1,7 +1,10 @@
-class MSGIndianOceanDataSource(DataSource):
+import satellite
+from satellite import *
+
+class MSGIndianOceanDataSource(satellite.DataSource):
     def __init__(self):
-        self.consumer_key = Config.eumetsat_consumer_key
-        self.consumer_secret = Config.eumetsat_consumer_secret
+        self.consumer_key = satellite.Config.eumetsat_consumer_key
+        self.consumer_secret = satellite.Config.eumetsat_consumer_secret
     def getRecentData(self, file_prefix=''):
         """
         Fetch the most recent data from EUMETSAT

@@ -1,9 +1,12 @@
-class GOESWestDataSource(DataSource):
+import satellite
+from satellite import *
+
+class GOESWestDataSource(satellite.DataSource):
     def __init__(self):
         self.name = "GOES 18 West"
         self.id = "GOES-18"
         # Updated to point to the GOES-18 GEOCOLOR image
-        self.data_url = Config.GOES_WEST_STATIC_URL
+        self.data_url = satellite.Config.GOES_WEST_STATIC_URL
 
     def getRecentData(self, file_prefix=''):
         """
@@ -12,7 +15,7 @@ class GOESWestDataSource(DataSource):
         :param file_prefix: Optional. A string to prepend to the filename on save.
         """
         filename = f"{file_prefix}_{os.path.basename(self.data_url)}"
-        save_path = os.path.join(Config.output_dir, filename)
+        save_path = os.path.join(satellite.Config.output_dir, filename)
 
         try:
             urlretrieve(self.data_url, save_path)

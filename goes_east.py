@@ -1,8 +1,11 @@
-class GOESEastDataSource(DataSource):
+import satellite
+from satellite import *
+
+class GOESEastDataSource(satellite.DataSource):
     def __init__(self):
         self.name = "GOES 16 East"
         self.id = "GOES-16"
-        self.data_url = Config.GOES_EAST_STATIC_URL
+        self.data_url = satellite.Config.GOES_EAST_STATIC_URL
 
     def getRecentData(self, file_prefix=''):
         """

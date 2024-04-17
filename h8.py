@@ -1,6 +1,9 @@
-class Himawari8DataSource(DataSource):
+import satellite
+from satellite import *
+
+class Himawari8DataSource(satellite.DataSource):
     def __init__(self):
-        self.link = Config.h8_link
+        self.link = satellite.Config.h8_link
         self.name = "Himawari 8"
         self.id = "H8"
 

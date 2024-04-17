@@ -1,7 +1,10 @@
-class MSG0DegreeDataSource(DataSource):
+import satellite
+from satellite import *
+
+class MSG0DegreeDataSource(satellite.DataSource):
     def __init__(self):
-        self.consumer_key = Config.eumetsat_consumer_key
-        self.consumer_secret = Config.eumetsat_consumer_secret
+        self.consumer_key = satellite.Config.eumetsat_consumer_key
+        self.consumer_secret = satellite.Config.eumetsat_consumer_secret
 
     def getRecentData(self, file_prefix=''):
         """
