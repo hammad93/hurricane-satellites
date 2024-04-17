@@ -5,6 +5,8 @@ class MSG0DegreeDataSource(satellite.DataSource):
     def __init__(self):
         self.consumer_key = satellite.Config.eumetsat_consumer_key
         self.consumer_secret = satellite.Config.eumetsat_consumer_secret
+        self.name = "MSG 0 Degree"
+        self.id = "MSG0"
 
     def getRecentData(self, file_prefix=''):
         """
@@ -12,6 +14,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
 
         :param file_prefix: Optional. A string to prepend to the filename on save.
         """
+        self.recent_file_prefix = file_prefix
         credentials = (self.consumer_key, self.consumer_secret)
         token = eumdac.AccessToken(credentials)
 
@@ -41,9 +44,9 @@ class MSG0DegreeDataSource(satellite.DataSource):
                   print('Recent file changed to ' + self.recent_path)
 
         except eumdac.product.ProductError as error:
-            print(f"Error related to the product '{product}' while trying to download it: '{error.msg}'")
+            print(f"Error related to the product '{product}' while trying to download it: '{error}'")
         except requests.exceptions.ConnectionError as error:
-            print(f"Error related to the connection: '{error.msg}'")
+            print(f"Error related to the connection: '{error}'")
         except requests.exceptions.RequestException as error:
             print(f"Unexpected error: {error}")
 
@@ -60,6 +63,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
         # output to NetCDF
         output = scn.load(scn.available_dataset_names(), upper_right_corner='NE')
         scn.save_datasets(
+            filename=f"{self.recent_file_prefix}[{self.id}]",
             writer="cf",
             groups={
                 'default': filter(lambda x: x!='HRV', scn.available_dataset_names()),

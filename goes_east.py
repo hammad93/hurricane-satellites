@@ -27,6 +27,6 @@ class GOESEastDataSource(satellite.DataSource):
             return None
 
     def toNetCDF(self, existing_netcdf_path=None):
-        self.recent_netcdf_path = self.recent_path[:-len("tif")] + "nc"
+        self.recent_netcdf_path = self.recent_path.split('/')[-1][:-len("tif")] + "nc"
         ds = gdal.Translate(self.recent_netcdf_path, self.recent_path, format='NetCDF')
         print(f"Transformed {self.recent_path} to {self.recent_netcdf_path}")

@@ -14,7 +14,7 @@ class GOESWestDataSource(satellite.DataSource):
 
         :param file_prefix: Optional. A string to prepend to the filename on save.
         """
-        filename = f"{file_prefix}_{os.path.basename(self.data_url)}"
+        filename = f"{file_prefix}[{self.id}]_{os.path.basename(self.data_url)}"
         save_path = os.path.join(satellite.Config.output_dir, filename)
 
         try:
@@ -27,6 +27,6 @@ class GOESWestDataSource(satellite.DataSource):
             return None
 
     def toNetCDF(self, existing_netcdf_path=None):
-        self.recent_netcdf_path = self.recent_path[:-len("tif")] + "nc"
+        self.recent_netcdf_path = self.recent_path.split('/')[-1][:-len("tif")] + "nc"
         ds = gdal.Translate(self.recent_netcdf_path, self.recent_path, format='NetCDF')
         print(f"Transformed {self.recent_path} to {self.recent_netcdf_path}")

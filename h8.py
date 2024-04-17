@@ -27,7 +27,7 @@ class Himawari8DataSource(satellite.DataSource):
         Download a single image and save it.
         """
         try:
-            filename = f"{file_prefix}_{band_index}_{url.split('/')[-1]}"
+            filename = f"{file_prefix}[{self.id}]_{band_index}_{url.split('/')[-1]}"
             print(f"Himarwari 8 downloading {filename}")
             save_path = os.path.join(Config.output_dir, filename)
             urlretrieve(url, save_path)
@@ -110,7 +110,7 @@ class Himawari8DataSource(satellite.DataSource):
                   print(f"{filename} is not a PNG")
 
           # Save the combined image
-          combined_path = f"{self.file_prefix}_{band}_combined_image_greyscale.png"
+          combined_path = f"{Config.output_dir}/{self.file_prefix}_{band}_combined_image_greyscale.png"
           combined_image.save(combined_path)
 
           #gdal_translate -a_srs "+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +no_defs" -a_ullr -5500000 5500000 5500000 -5500000 PI_H08_20150125_0230_TRC_FLDK_R10_PGPFD.png temp.tif
@@ -127,7 +127,7 @@ class Himawari8DataSource(satellite.DataSource):
 
           preprocessed = combined_path[:-len('.png')]+'[preprocessed].tif'
           print(f"Combined image at {combined_path} and preprocessed at {preprocessed}")
-          nc_path = combined_path[:-len('tif')] + 'nc'
+          nc_path = combined_path.split('/')[-1][:-len('tif')] + 'nc'
           ds = gdal.Translate(nc_path, preprocessed, format='NetCDF')
           print(f"Translated to {nc_path}")
 
