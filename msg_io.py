@@ -16,7 +16,7 @@ class MSGIndianOceanDataSource(satellite.DataSource):
         """
         self.recent_file_prefix = file_prefix
         credentials = (self.consumer_key, self.consumer_secret)
-        token = eumdac.AccessToken(credentials)
+        token = eumdac.AccessToken(credentials, cache=False)
 
         print(f"This token '{token}' expires {token.expiration}")
 
@@ -63,7 +63,7 @@ class MSGIndianOceanDataSource(satellite.DataSource):
         # output to NetCDF
         output = scn.load(scn.available_dataset_names(), upper_right_corner='NE')
         scn.save_datasets(
-            filename=f"{self.recent_file_prefix}[{self.id}]",
+            filename=f"{self.recent_file_prefix}[{self.id}].nc",
             writer="cf",
             groups={
                 'default': filter(lambda x: x!='HRV', scn.available_dataset_names()),
