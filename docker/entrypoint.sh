@@ -5,7 +5,7 @@ echo "Docker container has been started"
 
 declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /container.env
 
-wget https://raw.githubusercontent.com/hammad93/hurricane-server/main/hurricane_satellites.ipynb
+wget https://raw.githubusercontent.com/hammad93/hurricane-satellies/main/hurricane_satellites.ipynb
 
 pip install ipython
 pip install nbformat
