@@ -9,4 +9,4 @@ wget https://raw.githubusercontent.com/hammad93/hurricane-server/main/hurricane_
 
 pip install ipython
 pip install nbformat
-ipython --TerminalIPythonApp.file_to_run=hurricane_satellies.ipynb
+ipython --TerminalIPythonApp.file_to_run=hurricane_satellites.ipynb
