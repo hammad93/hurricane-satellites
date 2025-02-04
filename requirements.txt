@@ -2,5 +2,6 @@ eumdac
 libnetcdf
 rasterio
 satpy
-netCDF4==1.6.0
+netCDF4
 pysftp
+gdal
