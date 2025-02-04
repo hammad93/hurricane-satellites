@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM continuumio/anaconda3
 
 ARG EUMETSAT_PASS
 ENV EUMETSAT_PASS=$EUMETSAT_PASS
@@ -14,6 +14,10 @@ ENV HOST_SSH=$HOST_SSH
 
 ARG USER_SSH
 ENV USER_SSH=$USER_SSH
+
+RUN git clone --single-branch --branch main https://github.com/hammad93/hurricane-satellites.git
+RUN conda install gdal
+RUN pip install -r hurricane-satellites/requirements.txt
 
 # Entrypoint
 ADD entrypoint.sh /root/entrypoint.sh
