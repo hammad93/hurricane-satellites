@@ -21,7 +21,9 @@ class Config(ABC):
     h8_link = "https://himawari8.nict.go.jp/img/FULL_24h/latest.json?_={time}"
     eumetsat_consumer_key = os.getenv('EUMETSAT_PASS')
     eumetsat_consumer_secret = os.getenv('EUMETSAT_SECRET')
-    output_dir = '/content'
+    output_dir = './content'
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
 class DataSource(ABC):
     
