@@ -5,8 +5,10 @@ echo "Docker container has been started"
 
 declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /container.env
 
-wget https://raw.githubusercontent.com/hammad93/hurricane-satellites/main/hurricane_satellites.ipynb
+source /opt/venv/bin/activate
+pip install jupyter
+jupyter lab --allow-root --ip=0.0.0.0 --port=8888 --no-browser --NotebookApp.token=''
 
-pip install ipython
-pip install nbformat
-ipython --TerminalIPythonApp.file_to_run=hurricane_satellites.ipynb
+# pip install ipython
+# pip install nbformat
+# ipython --TerminalIPythonApp.file_to_run=hurricane_satellites.ipynb

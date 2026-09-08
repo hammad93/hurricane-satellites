@@ -1,25 +1,22 @@
-FROM continuumio/anaconda3
+FROM ubuntu:latest
+WORKDIR /app
+COPY . /app
+RUN apt-get update && apt-get install -y --no-install-recommends git python3 python3-pip python3-dev python3-venv gdal-bin libgdal-dev build-essential && rm -rf /var/lib/apt/lists/*
+ENV PATH="/opt/venv/bin:$PATH"
 
-ARG EUMETSAT_PASS
-ENV EUMETSAT_PASS=$EUMETSAT_PASS
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
 
-ARG EUMETSAT_SECRET
-ENV EUMETSAT_SECRET=$EUMETSAT_SECRET
+RUN python3 -m venv /opt/venv && \
+    . /opt/venv/bin/activate && \
+    pip install --upgrade pip && \
+    GDAL_VER=$(ogrinfo --version | awk '{print $2}' | cut -d, -f1) && \
+    pip install --no-cache-dir "GDAL==$GDAL_VER"
 
-ARG BASE64_SSH_GEOSERVER
-ENV BASE64_SSH_GEOSERVER=$BASE64_SSH_GEOSERVER
-
-ARG HOST_SSH
-ENV HOST_SSH=$HOST_SSH
-
-ARG USER_SSH
-ENV USER_SSH=$USER_SSH
-
-RUN git clone --single-branch --branch main https://github.com/hammad93/hurricane-satellites.git
-RUN conda install gdal
-RUN pip install -r hurricane-satellites/requirements.txt
+RUN git clone https://github.com/hammad93/hurricane-satellites.git
 
 # Entrypoint
+EXPOSE 8888
 ADD entrypoint.sh /root/entrypoint.sh
 RUN chmod +x /root/entrypoint.sh
-ENTRYPOINT /root/entrypoint.sh
+ENTRYPOINT ["/root/entrypoint.sh"]
