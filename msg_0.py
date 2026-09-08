@@ -39,14 +39,14 @@ class MSG0DegreeDataSource(satellite.DataSource):
             with product.open() as fsrc :
                 self.recent_path = f'{Config.output_dir}/{file_prefix}_{fsrc.name}'
                 with open(self.recent_path, mode='wb') as fdst:
-                  shutil.copyfileobj(fsrc, fdst)
-                  print(f'Download of product {product} finished.')
-
-                  # extract zip
-                  print('Extracting . . .')
-                  subprocess.run(["unzip", self.recent_path, "-d", self.recent_path[:-len('.zip')]])
-                  self.recent_path = f"{self.recent_path[:-len('.zip')]}/{self.recent_path.split('_')[-1][:-len('zip')]}nat"
-                  print('Recent file changed to ' + self.recent_path)
+                    shutil.copyfileobj(fsrc, fdst)
+                    print(f'Download of product {product} finished.')
+                    
+            # extract zip
+            print('Extracting . . .')
+            subprocess.run(["unzip", self.recent_path, "-d", self.recent_path[:-len('.zip')]])
+            self.recent_path = f"{self.recent_path[:-len('.zip')]}/{self.recent_path.split('_')[-1][:-len('zip')]}nat"
+            print('Recent file changed to ' + self.recent_path)
 
         except eumdac.product.ProductError as error:
             print(f"Error related to the product '{product}' while trying to download it: '{error}'")
