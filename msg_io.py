@@ -1,5 +1,6 @@
 import satellite
 from satellite import *
+import datetime
 
 class MSGIndianOceanDataSource(satellite.DataSource):
     def __init__(self):
@@ -26,8 +27,12 @@ class MSGIndianOceanDataSource(satellite.DataSource):
         print(selected_collection.title)
 
         display(selected_collection.search_options)
+        end_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        start_time = end_time - datetime.timedelta(hours=24)
+        print('Filtering data >1hr based on licensing terms')
 
-        product = selected_collection.search().first()
+        products = selected_collection.search(dtstart=start_time, dtend=end_time)
+        product = products.first()
         print(product)
 
         try:
