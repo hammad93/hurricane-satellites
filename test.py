@@ -48,8 +48,8 @@ main()
 
 print(satellites)
 
-for satellite in satellites :
-    satellite.toNetCDF()
+for sat in satellites :
+    sat.toNetCDF()
 
 # Update 'latest' symlink to point to the most recent output directory
 output_base = os.getenv('OUTPUT_DIR', './content')
