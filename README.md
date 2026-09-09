@@ -26,8 +26,6 @@ Downloads must be from a primary source.
     - https://eoportal.eumetsat.int/userMgmt/register.faces
     - https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
     - https://api.eumetsat.int/api-key/
-  - SFTP environment variables to upload results
-    - BASE64_SSH_GEOSERVER
-      - A base 64 encoded string of the SSH key
-    - HOST_SSH
-    - USER_SSH
+  - Docker usage:
+    - Build the image: `docker build -t hurricane-satellites docker/`
+    - Run the automation: `docker run -v $(pwd)/output:/output -e OUTPUT_DIR=/output -e EUMETSAT_PASS= -e EUMETSAT_SECRET= hurricane-satellites`

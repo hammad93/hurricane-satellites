@@ -1,8 +1,9 @@
 import os
-# https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#environment-variables
-vars = ["EUMETSAT_PASS", "EUMETSAT_SECRET", "BASE64_SSH_GEOSERVER", "HOST_SSH", "USER_SSH"]
-if None in [os.getenv(env) for env in vars] :
-    print(f'Warning: Not all environment variables initialized, {vars}')
+# Verify required EUMETSAT credentials are set
+required_vars = ["EUMETSAT_PASS", "EUMETSAT_SECRET"]
+missing = [env for env in required_vars if os.getenv(env) is None]
+if missing:
+    print(f'Warning: Missing required environment variables: {missing}')
 
 import satellite
 import goes_east
@@ -49,4 +50,11 @@ print(satellites)
 
 for satellite in satellites :
     satellite.toNetCDF()
+
+# Update 'latest' symlink to point to the most recent output directory
+output_base = os.getenv('OUTPUT_DIR', './content')
+latest_link = os.path.join(output_base, 'latest')
+if os.path.islink(latest_link) or os.path.exists(latest_link):
+    os.remove(latest_link)
+os.symlink(satellite.Config.output_dir, latest_link)
 
