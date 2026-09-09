@@ -4,10 +4,10 @@
 echo "Docker container has been started"
 
 declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /container.env
-
+export OUTPUT_DIR=/output/
 source /opt/venv/bin/activate
-pip install -r /output/hurricane-satellites/requirements.txt
-python /output/hurricane-satellites/test.py
+pip install -r /app/hurricane-satellites/requirements.txt
+python /app/hurricane-satellites/test.py
 # pip install jupyter
 # jupyter lab --allow-root --ip=0.0.0.0 --port=8888 --no-browser --NotebookApp.token=''
 # pip install ipython

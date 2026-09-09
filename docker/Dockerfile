@@ -1,6 +1,6 @@
 FROM ubuntu:latest
+WORKDIR /app
 VOLUME /output
-WORKDIR /output
 ENV OUTPUT_DIR=/output
 RUN apt-get update && apt-get install -y --no-install-recommends git python3 python3-pip python3-dev python3-venv gdal-bin libgdal-dev build-essential unzip
 ENV PATH="/opt/venv/bin:$PATH"

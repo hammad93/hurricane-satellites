@@ -26,7 +26,7 @@ class MSGIndianOceanDataSource(satellite.DataSource):
         selected_collection = datastore.get_collection(collection)
         print(selected_collection.title)
 
-        display(selected_collection.search_options)
+        # display(selected_collection.search_options)
         end_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         start_time = end_time - datetime.timedelta(hours=24)
         print('Filtering data >1hr based on licensing terms')
