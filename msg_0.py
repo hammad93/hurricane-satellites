@@ -68,7 +68,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
         # output to NetCDF
         output = scn.load(scn.available_dataset_names(), upper_right_corner='NE')
         scn.save_datasets(
-            filename=f"{self.recent_file_prefix}[{self.id}].nc",
+            filename=f"{Config.output_dir}{self.recent_file_prefix}[{self.id}].nc",
             writer="cf",
             groups={
                 'default': filter(lambda x: x!='HRV', scn.available_dataset_names()),

@@ -27,7 +27,7 @@ class Himawari8DataSource(satellite.DataSource):
         Download a single image and save it.
         """
         try:
-            filename = f"{file_prefix}[{self.id}]_{band_index}_{url.split('/')[-1]}"
+            filename = f"{file_prefix}[{self.id}]band_{band_index}_{url.split('/')[-1]}"
             print(f"Himarwari 8 downloading {filename}")
             save_path = os.path.join(Config.output_dir, filename)
             urlretrieve(url, save_path)
@@ -127,7 +127,7 @@ class Himawari8DataSource(satellite.DataSource):
 
           preprocessed = combined_path[:-len('.png')]+'[preprocessed].tif'
           print(f"Combined image at {combined_path} and preprocessed at {preprocessed}")
-          nc_path = combined_path.split('/')[-1][:-len('tif')] + 'nc'
+          nc_path = combined_path[:-len('tif')] + 'nc'
           ds = gdal.Translate(nc_path, preprocessed, format='NetCDF')
           print(f"Translated to {nc_path}")
 
