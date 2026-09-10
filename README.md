@@ -28,4 +28,5 @@ Downloads must be from a primary source.
     - https://api.eumetsat.int/api-key/
   - Docker usage:
     - Build the image: `docker build -t hurricane-satellites docker/`
-    - Run the automation: `docker run -v $(pwd)/output:/output -e OUTPUT_DIR=/output -e EUMETSAT_PASS= -e EUMETSAT_SECRET= hurricane-satellites`
+    - Run the automation: `docker run -v ./test:/output -e EUMETSAT_PASS= -e EUMETSAT_SECRET= hurricane-satellites`
+        - If EUMETSAT variables are not set, Meteosat satellites will not be available.

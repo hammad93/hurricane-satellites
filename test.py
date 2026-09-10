@@ -52,8 +52,9 @@ for sat in satellites :
     sat.toNetCDF()
 
 # Update 'latest' symlink to point to the most recent output directory
-latest_link = os.path.join(satellite.Config.output_dir, 'latest')
+latest_link = os.path.relpath('latest', os.environ["OUTPUT_DIR"])
+latest_path = os.path.relpath(os.path.basename(satellite.Config.output_dir), os.eviron["OUTPUT_DIR"])
 if os.path.islink(latest_link) or os.path.exists(latest_link):
     os.remove(latest_link)
-os.symlink(f"./{os.path.basename(satellite.Config.output_dir)}", latest_link)
+os.symlink(latest_path, latest_link)
 
