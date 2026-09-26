@@ -86,10 +86,14 @@ class MSG0DegreeDataSource(satellite.DataSource):
         )
         print(f"Transformed {self.recent_path} into GeoTIFF(s).")
         # Warp each generated GeoTIFF to EPSG:4326 (standard lat/long)
-        tif_pattern = os.path.join(Config.output_dir, f"{self.recent_file_prefix}[{self.id}]*.tif")
-        for tif_path in glob(tif_pattern):
-            warped_path = tif_path.replace('.tif', '_warped.tif')
-            gdal.Warp(destNameOrDestDS=warped_path, srcDSOrSrcDSTab=tif_path, dstSRS="EPSG:4326")
+        tifs = [f for f in os.listdir(Config.output_dir) if self.id in f and 'tif' in f]
+        for tif_file in tifs:
+            warped_path = os.path.join(Config.output_dir,
+                                       tif_file.replace('.tif', '_final.tif'))
+            print(f'GDAL warping {warped_path}')
+            gdal.Warp(destNameOrDestDS=warped_path,
+                      srcDSOrSrcDSTab=os.path.join(Config.output_dir, tif_file),
+                      dstSRS="EPSG:4326")
         # Load all datasets for NetCDF creation
         scn.load(scn.available_dataset_names(), upper_right_corner='NE')
         scn.save_datasets(
