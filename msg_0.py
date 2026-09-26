@@ -60,18 +60,36 @@ class MSG0DegreeDataSource(satellite.DataSource):
         References
         ----------
         https://satpy.readthedocs.io/en/stable/api/satpy.scene.html
+        https://satpy.readthedocs.io/en/stable/writing.html
         '''
         # read in the .nat
         scn = Scene(
             filenames=[self.recent_path],
             reader='seviri_l1b_native')
-        # output to NetCDF
-        output = scn.load(scn.available_dataset_names(), upper_right_corner='NE')
+        # output to GeoTIFF(s)
+        scn.load(
+            [band for band in scn.available_dataset_names() if band !='HRV'],
+            upper_right_corner='NE'
+        )
+        print('resampling . . . ')
+        resampled = scn.resample('msg_seviri_fes_3km')
+        print('saving . . . ')
+        name_tags = f"{self.recent_file_prefix}[{self.id}]"
+        resampled.save_datasets(
+            filename=name_tags + "{name}_{start_time:%Y%m%d_%H%M%S}.tif"
+            base_dir=Config.output_dir,
+            writer="geotiff",
+            driver="COG"
+        )
+        print(f"Transformed {self.recent_path} into GeoTIFF(s).")
+        scn.load(scn.available_dataset_names(), upper_right_corner='NE')
         scn.save_datasets(
-            filename=f"{Config.output_dir}/{self.recent_file_prefix}[{self.id}].nc",
+            filename=f"{Config.output_dir}/{name_tags}].nc",
             writer="cf",
             groups={
                 'default': filter(lambda x: x!='HRV', scn.available_dataset_names()),
-                'hrv': ['HRV']})
+                'hrv': ['HRV']
+            }
+        )
         print(f"Transformed {self.recent_path} into a NetCDF.")
         pass
