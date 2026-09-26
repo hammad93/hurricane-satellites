@@ -1,8 +1,10 @@
 import satellite
 from satellite import *
 import datetime
+from msg_0 import MSG0DegreeDataSource
 
-class MSGIndianOceanDataSource(satellite.DataSource):
+
+class MSGIndianOceanDataSource(MSG0DegreeDataSource):
     def __init__(self):
         self.consumer_key = satellite.Config.eumetsat_consumer_key
         self.consumer_secret = satellite.Config.eumetsat_consumer_secret
@@ -56,22 +58,4 @@ class MSGIndianOceanDataSource(satellite.DataSource):
             print(f"Unexpected error: {error}")
 
     def toNetCDF(self, existing_netcdf_path=None):
-        '''
-        References
-        ----------
-        https://satpy.readthedocs.io/en/stable/api/satpy.scene.html
-        '''
-        # read in the .nat
-        scn = Scene(
-            filenames=[self.recent_path],
-            reader='seviri_l1b_native')
-        # output to NetCDF
-        output = scn.load(scn.available_dataset_names(), upper_right_corner='NE')
-        scn.save_datasets(
-            filename=f"{Config.output_dir}/{self.recent_file_prefix}[{self.id}].nc",
-            writer="cf",
-            groups={
-                'default': filter(lambda x: x!='HRV', scn.available_dataset_names()),
-                'hrv': ['HRV']})
-        print(f"Transformed {self.recent_path} into a NetCDF.")
-        pass
+        return super().toNetCDF(existing_netcdf_path)

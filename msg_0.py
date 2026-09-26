@@ -76,7 +76,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
         print('saving . . . ')
         name_tags = f"{self.recent_file_prefix}[{self.id}]"
         resampled.save_datasets(
-            filename=name_tags + "{name}_{start_time:%Y%m%d_%H%M%S}.tif"
+            filename=name_tags + "{name}_{start_time:%Y%m%d_%H%M%S}.tif",
             base_dir=Config.output_dir,
             writer="geotiff",
             driver="COG"
