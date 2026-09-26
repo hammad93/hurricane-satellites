@@ -115,14 +115,14 @@ class Himawari8DataSource(satellite.DataSource):
 
           #gdal_translate -a_srs "+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +no_defs" -a_ullr -5500000 5500000 5500000 -5500000 PI_H08_20150125_0230_TRC_FLDK_R10_PGPFD.png temp.tif
           recent_GeoTiff = combined_path[:-len('.png')]+'.tif'
-          gdal.Translate(outputSRS="+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +no_defs",
+          gdal.Translate(outputSRS="+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +sweep=y +no_defs",
                         outputBounds=[-5500000, 5500000, 5500000, -5500000],
                         srcDS=combined_path,
                         destName=recent_GeoTiff)
           #gdalwarp -overwrite -t_srs "+proj=latlong +ellps=WGS84 +pm=140.7" -wo SOURCE_EXTRA=100 temp.tif Himawari8.tif
           gdal.Warp(destNameOrDestDS=combined_path[:-len('.png')]+'[preprocessed].tif',
                     srcDSOrSrcDSTab=recent_GeoTiff,
-                    dstSRS="+proj=latlong +ellps=WGS84 +pm=140.7",
+                    dstSRS="+proj=latlong +ellps=WGS84 +no_defs",
                     warpOptions={'SOURCE_EXTRA': 100})
 
           preprocessed = combined_path[:-len('.png')]+'[preprocessed].tif'
