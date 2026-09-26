@@ -1,6 +1,9 @@
 import satellite
 from satellite import *
 import datetime
+import os
+from glob import glob
+from osgeo import gdal
 
 class MSG0DegreeDataSource(satellite.DataSource):
     def __init__(self):
@@ -82,6 +85,12 @@ class MSG0DegreeDataSource(satellite.DataSource):
             driver="COG"
         )
         print(f"Transformed {self.recent_path} into GeoTIFF(s).")
+        # Warp each generated GeoTIFF to EPSG:4326 (standard lat/long)
+        tif_pattern = os.path.join(Config.output_dir, f"{self.recent_file_prefix}[{self.id}]*.tif")
+        for tif_path in glob(tif_pattern):
+            warped_path = tif_path.replace('.tif', '_warped.tif')
+            gdal.Warp(destNameOrDestDS=warped_path, srcDSOrSrcDSTab=tif_path, dstSRS="EPSG:4326")
+        # Load all datasets for NetCDF creation
         scn.load(scn.available_dataset_names(), upper_right_corner='NE')
         scn.save_datasets(
             filename=f"{Config.output_dir}/{name_tags}].nc",
