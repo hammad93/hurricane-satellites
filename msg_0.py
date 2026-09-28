@@ -58,7 +58,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
         except requests.exceptions.RequestException as error:
             print(f"Unexpected error: {error}")
 
-    def toNetCDF(self, bands=['VIS006', 'VIS008', 'IR_016']):
+    def toNetCDF(self, bands=['IR_016', 'IR_039', 'WV_062', 'WV_073', 'IR_087', 'IR_097', 'IR_108', 'VIS006', 'VIS008', 'HRV']):
         '''
         References
         ----------
@@ -72,7 +72,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
             reader='seviri_l1b_native')
         # output to GeoTIFF(s)
         scn.load(
-            [band for band in scn.available_dataset_names() if band !='HRV'],
+            scn.available_dataset_names(),
             upper_right_corner='NE'
         )
         print(f'{name_tags} resampling . . . ')
@@ -85,13 +85,16 @@ class MSG0DegreeDataSource(satellite.DataSource):
             driver="COG"
         )
         print(f"{name_tags} Transformed {self.recent_path} into GeoTiffs.")
-        vrt_path = f'{Config.output_dir}{name_tags}.vrt'
-        tif_paths = [path for path in os.listdir(Config.output_dir)
-                     if name_tags in path and any(band in path for band in bands)]
-        combo_tifs_path = f'{Config.output_dir}{name_tags}_combined.tif'
-        netcdf_path = f'{Config.output_dir}{name_tags}.nc'
+        vrt_path = f'{Config.output_dir}/{name_tags}.vrt'
+        tif_paths = []
+        for band in bands:
+            paths = [f"{Config.output_dir}/{path}" for path in os.listdir(Config.output_dir)
+                     if name_tags in path and band in path]
+            tif_paths.extend(paths)
+        combo_tifs_path = f'{Config.output_dir}/{name_tags}_combined.tif'
+        netcdf_path = f'{Config.output_dir}/{name_tags}.nc'
         print(f"{name_tags} Combining GeoTiffs . . .{'\n\t'.join(tif_paths)}")
-        gdal.BuildVRT(vrt_path, tif_paths, separate=True)
+        gdal.BuildVRT(vrt_path, tif_paths, separate=True, bandList=[1])
         gdal.Translate(
             combo_tifs_path,
             vrt_path,
