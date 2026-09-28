@@ -57,5 +57,5 @@ class MSGIndianOceanDataSource(MSG0DegreeDataSource):
         except requests.exceptions.RequestException as error:
             print(f"Unexpected error: {error}")
 
-    def toNetCDF(self, existing_netcdf_path=None):
-        return super().toNetCDF(existing_netcdf_path)
+    def toNetCDF(self):
+        return super().toNetCDF()

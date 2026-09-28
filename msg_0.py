@@ -58,13 +58,14 @@ class MSG0DegreeDataSource(satellite.DataSource):
         except requests.exceptions.RequestException as error:
             print(f"Unexpected error: {error}")
 
-    def toNetCDF(self, existing_netcdf_path=None):
+    def toNetCDF(self, bands=['VIS006', 'VIS008', 'IR_016']):
         '''
         References
         ----------
         https://satpy.readthedocs.io/en/stable/api/satpy.scene.html
         https://satpy.readthedocs.io/en/stable/writing.html
         '''
+        name_tags = f"{self.recent_file_prefix}[{self.id}]"
         # read in the .nat
         scn = Scene(
             filenames=[self.recent_path],
@@ -74,35 +75,36 @@ class MSG0DegreeDataSource(satellite.DataSource):
             [band for band in scn.available_dataset_names() if band !='HRV'],
             upper_right_corner='NE'
         )
-        print('resampling . . . ')
+        print(f'{name_tags} resampling . . . ')
         resampled = scn.resample('msg_seviri_fes_3km')
-        print('saving . . . ')
-        name_tags = f"{self.recent_file_prefix}[{self.id}]"
+        print(f'{name_tags} saving . . . ')
         resampled.save_datasets(
             filename=name_tags + "{name}_{start_time:%Y%m%d_%H%M%S}.tif",
             base_dir=Config.output_dir,
             writer="geotiff",
             driver="COG"
         )
-        print(f"Transformed {self.recent_path} into GeoTIFF(s).")
-        # Warp each generated GeoTIFF to EPSG:4326 (standard lat/long)
-        tifs = [f for f in os.listdir(Config.output_dir) if self.id in f and 'tif' in f]
-        for tif_file in tifs:
-            warped_path = os.path.join(Config.output_dir,
-                                       tif_file.replace('.tif', '_final.tif'))
-            print(f'GDAL warping {warped_path}')
-            gdal.Warp(destNameOrDestDS=warped_path,
-                      srcDSOrSrcDSTab=os.path.join(Config.output_dir, tif_file),
-                      dstSRS="EPSG:4326")
-        # Load all datasets for NetCDF creation
-        scn.load(scn.available_dataset_names(), upper_right_corner='NE')
-        scn.save_datasets(
-            filename=f"{Config.output_dir}/{name_tags}.nc",
-            writer="cf",
-            groups={
-                'default': filter(lambda x: x!='HRV', scn.available_dataset_names()),
-                'hrv': ['HRV']
-            }
+        print(f"{name_tags} Transformed {self.recent_path} into GeoTiffs.")
+        vrt_path = f'{Config.output_dir}{name_tags}.vrt'
+        tif_paths = [path for path in os.listdir(Config.output_dir)
+                     if name_tags in path and any(band in path for band in bands)]
+        combo_tifs_path = f'{Config.output_dir}{name_tags}_combined.tif'
+        netcdf_path = f'{Config.output_dir}{name_tags}.nc'
+        print(f"{name_tags} Combining GeoTiffs . . .{'\n\t'.join(tif_paths)}")
+        gdal.BuildVRT(vrt_path, tif_paths, separate=True)
+        gdal.Translate(
+            combo_tifs_path,
+            vrt_path,
+            format="COG",
+            creationOptions=['COMPRESS=DEFLATE', 'PREDICTOR=2', 'BIGTIFF=IF_SAFER']
+        )
+        print(f'{name_tags} Done. Creating NetCDF . . .')
+        gdal.Warp(
+            netcdf_path,
+            combo_tifs_path,
+            dstSRS="EPSG:4326",
+            format="netCDF",
+            creationOptions=['COMPRESS=DEFLATE', 'ZLEVEL=9']
         )
         print(f"Transformed {self.recent_path} into a NetCDF.")
         pass
