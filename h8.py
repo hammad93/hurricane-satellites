@@ -95,39 +95,61 @@ class Himawari8DataSource(satellite.DataSource):
             else:
                 band_paths[band] = []
 
+        tif_paths = [] # save the output GeoTiff paths
         for band in band_paths.keys() :
-          # Create a blank image for the final combined image
-          combined_image = Image.new('LA', (tile_size * grid_size, tile_size * grid_size))
-          for filename in band_paths[band]:
-              if filename.endswith(".png"):
-                  x, y = get_coordinates(filename)
-                  img = Image.open(filename)
+            # Create a blank image for the final combined image
+            combined_image = Image.new('LA', (tile_size * grid_size, tile_size * grid_size))
+            for filename in band_paths[band]:
+                if filename.endswith(".png"):
+                    x, y = get_coordinates(filename)
+                    img = Image.open(filename)
 
-                  # Ensure the image is in grayscale mode 'LA'
-                  print(filename)
-                  combined_image.paste(img, (x * tile_size, y * tile_size))
-              else:
-                  print(f"{filename} is not a PNG")
+                    # Ensure the image is in grayscale mode 'LA'
+                    print(filename)
+                    combined_image.paste(img, (x * tile_size, y * tile_size))
+                else:
+                    print(f"{filename} is not a PNG")
 
-          # Save the combined image
-          combined_path = f"{Config.output_dir}/{self.file_prefix}_{band}_combined_image_greyscale.png"
-          combined_image.save(combined_path)
+            # Save the combined image
+            combined_path = f"{Config.output_dir}/{self.file_prefix}_{band}_combined_image_greyscale.png"
+            combined_image.save(combined_path)
 
-          #gdal_translate -a_srs "+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +no_defs" -a_ullr -5500000 5500000 5500000 -5500000 PI_H08_20150125_0230_TRC_FLDK_R10_PGPFD.png temp.tif
-          recent_GeoTiff = combined_path[:-len('.png')]+'.tif'
-          gdal.Translate(outputSRS="+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +sweep=y +no_defs",
+            #gdal_translate -a_srs "+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +no_defs" -a_ullr -5500000 5500000 5500000 -5500000 PI_H08_20150125_0230_TRC_FLDK_R10_PGPFD.png temp.tif
+            recent_GeoTiff = combined_path[:-len('.png')]+'.tif'
+            gdal.Translate(outputSRS="+proj=geos +h=35785863 +a=6378137.0 +b=6356752.3 +lon_0=140.7 +sweep=y +no_defs",
                         outputBounds=[-5500000, 5500000, 5500000, -5500000],
                         srcDS=combined_path,
                         destName=recent_GeoTiff)
-          #gdalwarp -overwrite -t_srs "+proj=latlong +ellps=WGS84 +pm=140.7" -wo SOURCE_EXTRA=100 temp.tif Himawari8.tif
-          gdal.Warp(destNameOrDestDS=combined_path[:-len('.png')]+'[preprocessed].tif',
+            #gdalwarp -overwrite -t_srs "+proj=latlong +ellps=WGS84 +pm=140.7" -wo SOURCE_EXTRA=100 temp.tif Himawari8.tif
+            gdal.Warp(destNameOrDestDS=combined_path[:-len('.png')]+'[preprocessed].tif',
                     srcDSOrSrcDSTab=recent_GeoTiff,
                     dstSRS="+proj=latlong +ellps=WGS84 +no_defs",
                     warpOptions={'SOURCE_EXTRA': 100})
+            tif_paths.append(recent_GeoTiff)
 
-          preprocessed = combined_path[:-len('.png')]+'[preprocessed].tif'
-          print(f"Combined image at {combined_path} and preprocessed at {preprocessed}")
-          nc_path = combined_path[:-len('tif')] + 'nc'
-          ds = gdal.Translate(nc_path, preprocessed, format='NetCDF')
-          print(f"Translated to {nc_path}")
-
+        # convert to NetCDF
+        h8_srs = '+proj=geos +lon_0=140.7 +h=35785863 +x_0=0 +y_0=0 +a=6378137 +rf=298.257024882273 +units=m +no_defs'
+        path_prefix = f'{Config.output_dir}/{self.file_prefix}'
+        vrt_path = f'{path_prefix}.vrt'
+        combo_tifs_path = f'{path_prefix}_all_bands.tif'
+        netcdf_path = f'{path_prefix}.nc'
+        print(f'{self.file_prefix} Combining GeoTiffs . . .')
+        # order the bands in reverse through order of input tifs
+        gdal.BuildVRT(vrt_path, tif_paths.reverse(), separate=True, bandList=[2])
+        gdal.Translate(
+            combo_tifs_path,
+            vrt_path,
+            format="COG",
+            outputSRS=h8_srs,
+            creationOptions=['COMPRESS=DEFLATE', 'PREDICTOR=2', 'BIGTIFF=IF_SAFER']
+        )
+        print(f'{self.file_prefix} Done. Creating NetCDF . . .')
+        gdal.Warp(
+            netcdf_path,
+            combo_tifs_path,
+            srcSRS=h8_srs,
+            dstSRS="EPSG:4326",
+            format="netCDF",
+            creationOptions=['COMPRESS=DEFLATE', 'ZLEVEL=9']
+        )
+        print(f'{self.file_prefix} Done. Output to {netcdf_path}')
