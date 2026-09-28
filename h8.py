@@ -135,7 +135,7 @@ class Himawari8DataSource(satellite.DataSource):
         netcdf_path = f'{path_prefix}.nc'
         print(f'{self.file_prefix} Combining GeoTiffs . . .')
         # order the bands in reverse through order of input tifs
-        gdal.BuildVRT(vrt_path, tif_paths.reverse(), separate=True, bandList=[2])
+        gdal.BuildVRT(vrt_path, tif_paths[::-1], separate=True, bandList=[2])
         gdal.Translate(
             combo_tifs_path,
             vrt_path,
