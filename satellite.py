@@ -69,9 +69,10 @@ class DataSource(ABC):
             style_data = xmltodict.parse(f.read())
             style_id = style_data['style']['id']
         coverage_ts = f'{datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}.00 UTC'
-        coverage_id = hashlib.md5(self.id.encode('utf')).hexdigest()[:11]
+        self.coverage_id = hashlib.md5(self.id.encode('utf')).hexdigest()[:11]
+        self.coveragestore_id = f'CoverageStoreInfoImpl-45f169cd:{self.coverage_id}:-7976'
         coveragestore = f'''<coverageStore>
-          <id>CoverageStoreInfoImpl-45f169cd:{coverage_id}:-7976</id>
+          <id>{self.coveragestore_id}</id>
           <name>{self.id}</name>
           <type>NetCDF</type>
           <enabled>true</enabled>
