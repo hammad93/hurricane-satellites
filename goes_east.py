@@ -26,7 +26,7 @@ class GOESEastDataSource(satellite.DataSource):
             print(f"Failed to download the file: {e}")
             return None
 
-    def toNetCDF(self, existing_netcdf_path=None):
+    def toNetCDF(self):
         self.recent_netcdf_path = self.recent_path[:-len(".tif")] + ".nc"
         ds = gdal.Translate(self.recent_netcdf_path, self.recent_path, format='NetCDF')
         print(f"Transformed {self.recent_path} to {self.recent_netcdf_path}")

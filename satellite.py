@@ -1,6 +1,8 @@
 import os
 import eumdac
 import datetime
+import xmltodict
+import hashlib
 import shutil
 import requests
 import dateutil
@@ -23,24 +25,93 @@ class Config(ABC):
     eumetsat_consumer_secret = os.getenv('EUMETSAT_SECRET')
     output_base = os.getenv('OUTPUT_DIR', './content')
     timestamp = int(datetime.datetime.utcnow().timestamp())
-    output_dir = os.path.join(output_base, f"hurricane-satellites-{timestamp}")
+    output_dir_name = f"hurricane-satellites-{timestamp}"
+    output_dir = os.path.join(output_base, output_dir_name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
 
 class DataSource(ABC):
     
+    def __init__(self):
+        self.id = None
+
     @abstractmethod
     def getRecentData(self):
         """Fetch the most recent data from the source."""
         pass
 
     @abstractmethod
-    def toNetCDF(self, existing_netcdf_path=None):
+    def toNetCDF(self):
         """
         Convert the data into NetCDF format.
-
-        Parameters:
-        - existing_netcdf_path (str): Path to an existing NetCDF file to which the new data will be added. If None, create a new NetCDF file.
         """
         pass
 
+    @abstractmethod
+    def createLayer(self, bands=None):
+        '''
+        Creates a layer (assumes one doesn't exist)
+        :return:
+        '''
+        # TODO
+        if bands is None:
+            bands = ['Band1', 'Band2', 'Band3']
+        work_dir = f'{Config.output_base}/workspaces/{os.environ.get("GEOSERVER_WORKSPACE")}'
+        store_dir = f'{work_dir}/{self.id}'
+        store_url = f"file:{Config.output_dir_name}/{os.path.basename(self.recent_netcdf_path)}"
+        # get workspace id
+        with open(f'{work_dir}/workspace.xml') as f:
+            # id is work_data['workspace']['id']
+            work_data = xmltodict.parse(f.read())
+            work_id = work_data['workspace']['id']
+        # get style id
+        with open(f'{work_dir}/styles/raster.xml') as f:
+            style_data = xmltodict.parse(f.read())
+            style_id = style_data['style']['id']
+        coverage_ts = f'{datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}.00 UTC'
+        coverage_id = hashlib.md5(self.id.encode('utf')).hexdigest()[:11]
+        coveragestore = f'''<coverageStore>
+          <id>CoverageStoreInfoImpl-45f169cd:{coverage_id}:-7976</id>
+          <name>{self.id}</name>
+          <type>NetCDF</type>
+          <enabled>true</enabled>
+          <workspace>
+            <id>{work_id}</id>
+          </workspace>
+          <__default>false</__default>
+          <dateCreated>{coverage_ts}</dateCreated>
+          <disableOnConnFailure>false</disableOnConnFailure>
+          <url>{store_url}</url>
+        </coverageStore>'''
+        # create directory
+        os.makedirs(store_dir, exist_ok=True)
+        # create coverage store
+        with open(f'{store_dir}/coveragestore.xml', 'w') as f:
+            f.write(coveragestore)
+        # create layer
+        os.makedirs(f'{store_dir}/{self.id}', exist_ok=True)
+        layer = f'''<layer>
+          <name>GOES-16</name>
+          <id>LayerInfoImpl-45f169cd:{coverage_id}:-7979</id>
+          <type>RASTER</type>
+          <defaultStyle>
+            <id>{style_id}</id>
+          </defaultStyle>
+          <resource class="coverage">
+            <id>{coverage_id}</id>
+          </resource>
+          <attribution>
+            <logoWidth>0</logoWidth>
+            <logoHeight>0</logoHeight>
+          </attribution>
+          <dateCreated>{coverage_ts}</dateCreated>
+        </layer>'''
+        with open(f'{work_dir}/{self.id}/layer.xml', 'w') as f:
+            f.write(layer)
+        # finalize
+        self.generate_coverage()
+        pass
+
+    @abstractmethod
+    def generate_coverage(self):
+        pass

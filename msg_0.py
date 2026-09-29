@@ -58,7 +58,8 @@ class MSG0DegreeDataSource(satellite.DataSource):
         except requests.exceptions.RequestException as error:
             print(f"Unexpected error: {error}")
 
-    def toNetCDF(self, bands=['IR_016', 'IR_039', 'WV_062', 'WV_073', 'IR_087', 'IR_097', 'IR_108', 'VIS006', 'VIS008', 'HRV']):
+    def toNetCDF(self, bands=['IR_016', 'IR_039', 'WV_062', 'WV_073',
+                              'IR_087', 'IR_097', 'IR_108','VIS006', 'VIS008', 'HRV']):
         '''
         References
         ----------
@@ -109,5 +110,6 @@ class MSG0DegreeDataSource(satellite.DataSource):
             format="netCDF",
             creationOptions=['COMPRESS=DEFLATE', 'ZLEVEL=9']
         )
+        self.recent_netcdf_path = netcdf_path
         print(f"Transformed {self.recent_path} into a NetCDF.")
         pass

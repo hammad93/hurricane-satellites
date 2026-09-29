@@ -5,3 +5,5 @@ satpy
 netCDF4
 pysftp
 gdal
+fire
+xmltodict

@@ -64,7 +64,7 @@ class Himawari8DataSource(satellite.DataSource):
             print("Failed to download any files.")
             return None
 
-    def toNetCDF(self, existing_netcdf_path=None):
+    def toNetCDF(self):
         '''
         https://gis.stackexchange.com/questions/188500/georeferencing-himawari-8-in-gdal-or-other
         '''
@@ -152,4 +152,5 @@ class Himawari8DataSource(satellite.DataSource):
             format="netCDF",
             creationOptions=['COMPRESS=DEFLATE', 'ZLEVEL=9']
         )
-        print(f'{self.file_prefix} Done. Output to {netcdf_path}')
+        self.recent_netcdf_path = netcdf_path
+        print(f'{self.file_prefix} Done. Output to {self.recent_netcdf_path}')
