@@ -41,7 +41,7 @@ class GOESEastDataSource(satellite.DataSource):
           <name>GOES-16</name>
           <nativeName>GOES-16</nativeName>
           <namespace>
-            <id>NamespaceInfoImpl--7f5864fa:{self.coverage_id}:-7ff5</id>
+            <id>{self.namespace_id}</id>
           </namespace>
           <title>GOES-16</title>
           <description>Generated from NetCDF</description>

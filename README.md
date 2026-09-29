@@ -30,3 +30,7 @@ Downloads must be from a primary source.
     - Build the image: `docker build -t hurricane-satellites docker/`
     - Run the automation: `docker run -v ./test:/output -e EUMETSAT_PASS= -e EUMETSAT_SECRET= hurricane-satellites`
         - If EUMETSAT variables are not set, Meteosat satellites will not be available.
+
+# WMS
+
+To configure WMS, first manually update the settings and then transform the associated `coverage.xml` for the satellite.

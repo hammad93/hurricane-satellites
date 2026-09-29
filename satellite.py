@@ -47,10 +47,9 @@ class DataSource(ABC):
         """
         pass
 
-    @abstractmethod
     def createLayer(self, bands=None):
         '''
-        Creates a layer (assumes one doesn't exist)
+        Creates a layer (assumes one doesn't exist). Required only for WMS
         :return:
         '''
         # TODO
@@ -61,13 +60,16 @@ class DataSource(ABC):
         store_url = f"file:{Config.output_dir_name}/{os.path.basename(self.recent_netcdf_path)}"
         # get workspace id
         with open(f'{work_dir}/workspace.xml') as f:
-            # id is work_data['workspace']['id']
             work_data = xmltodict.parse(f.read())
             work_id = work_data['workspace']['id']
         # get style id
-        with open(f'{work_dir}/styles/raster.xml') as f:
+        with open(f'{Config.output_base}/styles/raster.xml') as f:
             style_data = xmltodict.parse(f.read())
             style_id = style_data['style']['id']
+        # get namespace id
+        with open(f'{work_dir}/namespace.xml') as f:
+            namespace_data = xmltodict.parse(f.read())
+            self.namespace_id = namespace_data['namespace']['id']
         coverage_ts = f'{datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}.00 UTC'
         self.coverage_id = hashlib.md5(self.id.encode('utf')).hexdigest()[:11]
         self.coveragestore_id = f'CoverageStoreInfoImpl-45f169cd:{self.coverage_id}:-7976'
@@ -113,6 +115,5 @@ class DataSource(ABC):
         self.generate_coverage()
         pass
 
-    @abstractmethod
     def generate_coverage(self):
         pass
