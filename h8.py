@@ -253,7 +253,7 @@ class Himawari8DataSource(satellite.DataSource):
             <entry key="dirName">H8_H8</entry>
           </metadata>
           <store class="coverageStore">
-            <id>{self.coveragestore_id.split(':')[0]}:-77ce</id>
+            <id>{self.coveragestore_id}</id>
           </store>
           <serviceConfiguration>false</serviceConfiguration>
           <simpleConversionEnabled>false</simpleConversionEnabled>

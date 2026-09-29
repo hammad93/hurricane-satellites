@@ -157,7 +157,7 @@ class MSGIndianOceanDataSource(MSG0DegreeDataSource):
             <entry key="dirName">MSGIO_MSGIO</entry>
           </metadata>
           <store class="coverageStore">
-            <id>{self.coveragestore_id.split(':')[0]}:-7785</id>
+            <id>{self.coveragestore_id}</id>
           </store>
           <serviceConfiguration>false</serviceConfiguration>
           <simpleConversionEnabled>false</simpleConversionEnabled>

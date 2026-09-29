@@ -133,7 +133,7 @@ class GOESEastDataSource(satellite.DataSource):
             <entry key="dirName">GOES-16_GOES-16</entry>
           </metadata>
           <store class="coverageStore">
-            <id>{self.coveragestore_id.split(':')[0]}:-7988</id>
+            <id>{self.coveragestore_id}</id>
           </store>
           <serviceConfiguration>false</serviceConfiguration>
           <simpleConversionEnabled>false</simpleConversionEnabled>

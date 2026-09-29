@@ -213,7 +213,7 @@ class MSG0DegreeDataSource(satellite.DataSource):
             <entry key="dirName">MSG0_MSG0</entry>
           </metadata>
           <store class="coverageStore">
-            <id>{self.coveragestore_id.split(':')[0]}:-7788</id>
+            <id>{self.coveragestore_id}</id>
           </store>
           <serviceConfiguration>false</serviceConfiguration>
           <simpleConversionEnabled>false</simpleConversionEnabled>
