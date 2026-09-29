@@ -95,13 +95,13 @@ class DataSource(ABC):
         os.makedirs(f'{store_dir}/{self.id}', exist_ok=True)
         layer = f'''<layer>
           <name>GOES-16</name>
-          <id>LayerInfoImpl-45f169cd:{coverage_id}:-7979</id>
+          <id>LayerInfoImpl-45f169cd:{self.coverage_id}:-7979</id>
           <type>RASTER</type>
           <defaultStyle>
             <id>{style_id}</id>
           </defaultStyle>
           <resource class="coverage">
-            <id>{coverage_id}</id>
+            <id>{self.coverage_id}</id>
           </resource>
           <attribution>
             <logoWidth>0</logoWidth>
@@ -109,11 +109,13 @@ class DataSource(ABC):
           </attribution>
           <dateCreated>{coverage_ts}</dateCreated>
         </layer>'''
-        with open(f'{work_dir}/{self.id}/layer.xml', 'w') as f:
+        with open(f'{work_dir}/{self.id}/{self.id}/layer.xml', 'w') as f:
             f.write(layer)
         # finalize
-        self.generate_coverage()
-        pass
+        layer_coverage = self.generate_coverage()
+        with open(f'{work_dir}/{self.id}/{self.id}/coverage.xml', 'w') as f:
+            f.write(layer_coverage)
+        print(f"Completed create layer for {self.id}")
 
     def generate_coverage(self):
-        pass
+        raise NotImplementedError
