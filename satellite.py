@@ -101,7 +101,7 @@ class DataSource(ABC):
             <id>{style_id}</id>
           </defaultStyle>
           <resource class="coverage">
-            <id>{self.coverage_id}</id>
+            <id>{self.coveragestore_id}</id>
           </resource>
           <attribution>
             <logoWidth>0</logoWidth>
