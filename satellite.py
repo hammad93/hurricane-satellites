@@ -116,6 +116,12 @@ class DataSource(ABC):
         with open(f'{work_dir}/{self.id}/{self.id}/coverage.xml', 'w') as f:
             f.write(layer_coverage)
         print(f"Completed create layer for {self.id}")
+        # update GeoServer configuration
+        url = f'{os.environ.get("GEOSERVER_URL")}rest/reload'
+        response = requests.post(url, auth=(
+            os.environ.get("GEOSERVER_ADMIN_USER"), os.environ.get("GEOSERVER_ADMIN_PASSWORD")))
+        response.raise_for_status()
+        print(f"GeoServer configuration reloaded.\n{response.text}")
 
     def generate_coverage(self):
         raise NotImplementedError

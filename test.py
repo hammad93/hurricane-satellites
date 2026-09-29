@@ -78,7 +78,8 @@ def main(clean=0, wms=False):
     # update wms layers
     if wms:
         # workspace can be 'primary' on most installs
-        env_check = check_envs(['GEOSERVER_WORKSPACE'])
+        env_check = check_envs(['GEOSERVER_WORKSPACE', 'GEOSERVER_URL',
+                                'GEOSERVER_ADMIN_USER', 'GEOSERVER_ADMIN_PASSWORD'])
         if env_check:
             print(f"Unable to update WMS layers. Missing environment variables: {env_check}")
         else:
