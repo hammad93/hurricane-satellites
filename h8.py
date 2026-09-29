@@ -64,7 +64,7 @@ class Himawari8DataSource(satellite.DataSource):
             print("Failed to download any files.")
             return None
 
-    def toNetCDF(self, existing_netcdf_path=None):
+    def toNetCDF(self):
         '''
         https://gis.stackexchange.com/questions/188500/georeferencing-himawari-8-in-gdal-or-other
         '''
@@ -152,4 +152,198 @@ class Himawari8DataSource(satellite.DataSource):
             format="netCDF",
             creationOptions=['COMPRESS=DEFLATE', 'ZLEVEL=9']
         )
-        print(f'{self.file_prefix} Done. Output to {netcdf_path}')
+        self.recent_netcdf_path = netcdf_path
+        print(f'{self.file_prefix} Done. Output to {self.recent_netcdf_path}')
+
+    def generate_coverage(self):
+        coverage = f'''<coverage>
+          <id>{self.coveragestore_id}</id>
+          <name>H8</name>
+          <nativeName>H8</nativeName>
+          <namespace>
+            <id>{self.namespace_id}</id>
+          </namespace>
+          <title>H8</title>
+          <description>Generated from NetCDF</description>
+          <keywords>
+            <string>H8</string>
+            <string>WCS</string>
+            <string>NetCDF</string>
+          </keywords>
+          <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+          DATUM[&quot;World Geodetic System 1984&quot;, 
+            SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+            AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+          PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+          UNIT[&quot;degree&quot;, 0.017453292519943295], 
+          AXIS[&quot;Geodetic longitude&quot;, EAST], 
+          AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+          AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+          <srs>EPSG:4326</srs>
+          <nativeBoundingBox>
+            <minx>-179.99999933331813</minx>
+            <maxx>179.97761588345176</maxx>
+            <miny>-79.70634295228002</miny>
+            <maxy>79.68194590002715</maxy>
+            <crs>EPSG:4326</crs>
+          </nativeBoundingBox>
+          <latLonBoundingBox>
+            <minx>-179.99999933331813</minx>
+            <maxx>179.97761588345176</maxx>
+            <miny>-79.70634295228002</miny>
+            <maxy>79.68194590002715</maxy>
+            <crs>EPSG:4326</crs>
+          </latLonBoundingBox>
+          <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+          <enabled>true</enabled>
+          <metadata>
+            <entry key="COVERAGE_VIEW">
+              <coverageView>
+                <coverageBands>
+                  <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                      <inputCoverageBand>
+                        <coverageName>Band1</coverageName>
+                      </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>Band1</definition>
+                    <index>0</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                  </coverageBand>
+                  <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                      <inputCoverageBand>
+                        <coverageName>Band2</coverageName>
+                      </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>Band2</definition>
+                    <index>1</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                  </coverageBand>
+                  <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                      <inputCoverageBand>
+                        <coverageName>Band3</coverageName>
+                      </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>Band3</definition>
+                    <index>2</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                  </coverageBand>
+                </coverageBands>
+                <name>H8</name>
+                <envelopeCompositionType>INTERSECTION</envelopeCompositionType>
+                <selectedResolution>BEST</selectedResolution>
+                <compositionType>BAND_SELECT</compositionType>
+                <selectedResolutionIndex>-1</selectedResolutionIndex>
+                <outputName></outputName>
+                <definition></definition>
+                <fillMissingBands>false</fillMissingBands>
+              </coverageView>
+            </entry>
+            <entry key="NetCDFOutput.Key">
+              <netcdfLayerSettingsContainer>
+                <compressionLevel>0</compressionLevel>
+                <shuffle>true</shuffle>
+                <copyAttributes>false</copyAttributes>
+                <copyGlobalAttributes>false</copyGlobalAttributes>
+                <dataPacking>NONE</dataPacking>
+              </netcdfLayerSettingsContainer>
+            </entry>
+            <entry key="dirName">H8_H8</entry>
+          </metadata>
+          <store class="coverageStore">
+            <id>{self.coveragestore_id}</id>
+          </store>
+          <serviceConfiguration>false</serviceConfiguration>
+          <simpleConversionEnabled>false</simpleConversionEnabled>
+          <internationalTitle/>
+          <internationalAbstract/>
+          <nativeFormat>NetCDF</nativeFormat>
+          <grid dimension="2">
+            <range>
+              <low>0 0</low>
+              <high>7112 3149</high>
+            </range>
+            <transform>
+              <scaleX>0.05061552519920837</scaleX>
+              <scaleY>-0.050615525199208374</scaleY>
+              <shearX>0.0</shearX>
+              <shearY>0.0</shearY>
+              <translateX>-179.97469157071853</translateX>
+              <translateY>79.65663813742754</translateY>
+            </transform>
+            <crs>EPSG:4326</crs>
+          </grid>
+          <supportedFormats>
+            <string>ImageMosaic</string>
+            <string>GEOTIFF</string>
+            <string>NetCDF</string>
+            <string>ArcGrid</string>
+            <string>GeoPackage (mosaic)</string>
+            <string>GIF</string>
+            <string>PNG</string>
+            <string>JPEG</string>
+            <string>TIFF</string>
+          </supportedFormats>
+          <interpolationMethods>
+            <string>nearest neighbor</string>
+            <string>bilinear</string>
+            <string>bicubic</string>
+          </interpolationMethods>
+          <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+          <dimensions>
+            <coverageDimension>
+              <name>Band1</name>
+              <description>GridSampleDimension[0.0,255.0]</description>
+              <range>
+                <min>0.0</min>
+                <max>255.0</max>
+              </range>
+              <dimensionType>
+                <name>UNSIGNED_8BITS</name>
+              </dimensionType>
+            </coverageDimension>
+            <coverageDimension>
+              <name>Band2</name>
+              <description>GridSampleDimension[0.0,255.0]</description>
+              <range>
+                <min>0.0</min>
+                <max>255.0</max>
+              </range>
+              <dimensionType>
+                <name>UNSIGNED_8BITS</name>
+              </dimensionType>
+            </coverageDimension>
+            <coverageDimension>
+              <name>Band3</name>
+              <description>GridSampleDimension[0.0,255.0]</description>
+              <range>
+                <min>0.0</min>
+                <max>255.0</max>
+              </range>
+              <dimensionType>
+                <name>UNSIGNED_8BITS</name>
+              </dimensionType>
+            </coverageDimension>
+          </dimensions>
+          <requestSRS>
+            <string>EPSG:4326</string>
+          </requestSRS>
+          <responseSRS>
+            <string>EPSG:4326</string>
+          </responseSRS>
+          <parameters>
+            <entry>
+              <string>Bands</string>
+              <null/>
+            </entry>
+            <entry>
+              <string>Filter</string>
+              <null/>
+            </entry>
+          </parameters>
+          <nativeCoverageName>H8</nativeCoverageName>
+        </coverage>
+        '''
+        return coverage
