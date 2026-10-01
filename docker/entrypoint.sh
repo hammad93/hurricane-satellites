@@ -7,7 +7,7 @@ declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /contai
 export OUTPUT_DIR=/output/
 source /opt/venv/bin/activate
 pip install -r /app/hurricane-satellites/requirements.txt
-python /app/hurricane-satellites/test.py
+python /app/hurricane-satellites/test.py --clean=True --wms=True
 # pip install jupyter
 # jupyter lab --allow-root --ip=0.0.0.0 --port=8888 --no-browser --NotebookApp.token=''
 # pip install ipython
