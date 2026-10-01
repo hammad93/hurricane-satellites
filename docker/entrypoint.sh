@@ -13,3 +13,4 @@ python /app/hurricane-satellites/test.py --clean=True --wms=True
 # pip install ipython
 # pip install nbformat
 # ipython --TerminalIPythonApp.file_to_run=hurricane_satellites.ipynb
+tail -f /dev/null
